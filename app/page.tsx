@@ -1,4 +1,5 @@
 import Player from "@/components/Player";
+import TimerChallenge from "@/components/TimerChallenge";
 
 export default function Home() {
   return (
@@ -13,7 +14,16 @@ export default function Home() {
         </header>
         <div>
           <Player />
-          <div id="challenges"></div>
+          <div id="challenges">
+            <TimerChallenge targetTime={3} />
+            <TimerChallenge title="Easy" targetTime={1} />
+            <TimerChallenge title="Normal" targetTime={3} />
+            <TimerChallenge title="Hard" targetTime={5} />
+            <TimerChallenge title="Expert" targetTime={10} />
+            <TimerChallenge title="Master" targetTime={15} />
+            <TimerChallenge title="King" targetTime={20} />
+            <TimerChallenge title="Slayer" targetTime={30} />
+          </div>
         </div>
       </div>
     </>
