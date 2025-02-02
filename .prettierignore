@@ -1,0 +1,16 @@
+node_modules
+next
+out
+public
+dist
+coverage
+
+# Ignore configuration files
+*.config.*
+.config/*
+*.env
+.env
+*.d.ts
+
+# Ignore markdown files
+*.md
