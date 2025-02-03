@@ -22,6 +22,9 @@ const ResultModal: React.FC<ResultModalProps> = ({
 }) => {
   const dialogRef = useRef<HTMLDialogElement | null>(null);
   remainingTime = Math.max(0, remainingTime ?? 0);
+  const score = remainingTime
+    ? (1 - remainingTime / (targetTime * 1000)) * 100
+    : 0;
 
   useImperativeHandle(ref, () => {
     return {
@@ -36,9 +39,26 @@ const ResultModal: React.FC<ResultModalProps> = ({
     };
   });
 
+  /**
+	 * Key Points of the <dialog> element's onClose:
+		Fires when the <dialog> is closed using close().
+		Does not fire if the dialog is hidden using CSS (display: none;).
+		The returnValue property of the <dialog> element can be used to determine how it was closed.
+	 */
+
   return (
-    <dialog ref={dialogRef} className="result-modal">
-      <h2>Your Score: {result}</h2>
+    <dialog
+      ref={dialogRef}
+      className="result-modal"
+      onClose={
+        // Triggered when the dialog is closed
+        // The onClose event in the <dialog> element is triggered when the dialog is closed,
+        // whether by calling dialog.close() in JavaScript
+        // or by the user interacting with the close button (if present).
+        () => {}
+      }
+    >
+      <h2>Your Score: {score} %</h2>
       <p>
         Target Time: <strong>{targetTime}</strong> seconds.
       </p>
