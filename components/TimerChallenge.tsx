@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import ResultModal from "./ResultModal";
 
 export type TimerChallengeProps = {
   title?: string;
@@ -19,6 +20,7 @@ const TimerChallenge: React.FC<TimerChallengeProps> = ({
   targetTime,
 }) => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const dialogRef = useRef<HTMLDialogElement | null>(null);
 
   const [timerState, setTimerState] = useState(TimerState.RESETTED);
   const handleClick = () => {
@@ -27,6 +29,7 @@ const TimerChallenge: React.FC<TimerChallengeProps> = ({
         setTimerState(TimerState.RUNNING);
         timerRef.current = setTimeout(() => {
           setTimerState(TimerState.EXPIRED);
+          dialogRef.current?.showModal();
         }, targetTime * 1000);
         break;
       case TimerState.RUNNING:
@@ -43,44 +46,44 @@ const TimerChallenge: React.FC<TimerChallengeProps> = ({
   };
 
   return (
-    <section className="challenge">
-      <h2>{title ?? "untitled"}</h2>
-      {timerState === TimerState.EXPIRED && <p>You Lost!</p>}
-      {/* {timerState === TimerState.STOPPED && <p>You Win!</p>} */}
-      <p className="challenge-time">
-        {targetTime} second{targetTime > 1 ? "s" : ""}
-      </p>
-      <p>
-        <button onClick={handleClick}>
+    <>
+      <ResultModal ref={dialogRef} result="You Lost!" targetTime={targetTime} />
+      <section className="challenge">
+        <h2>{title ?? "untitled"}</h2>
+        <p className="challenge-time">
+          {targetTime} second{targetTime > 1 ? "s" : ""}
+        </p>
+        <p>
+          <button onClick={handleClick}>
+            {(() => {
+              switch (timerState) {
+                case TimerState.RESETTED:
+                  return "Start";
+                case TimerState.RUNNING:
+                  return "Stop";
+                case TimerState.EXPIRED:
+                case TimerState.STOPPED:
+                  return "Reset";
+              }
+            })()}{" "}
+            Challenge
+          </button>
+        </p>
+        <p className={timerState === TimerState.RUNNING ? "active" : undefined}>
+          {/* "Timer inactive" */}
           {(() => {
             switch (timerState) {
-              case TimerState.RESETTED:
-                return "Start";
               case TimerState.RUNNING:
-                return "Stop";
+                return "Timer is running...";
               case TimerState.EXPIRED:
-                return "Reset";
+                return "Timer is expired!";
               case TimerState.STOPPED:
-                return "Reset";
+                return "Timer inactive";
             }
-          })()}{" "}
-          Challenge
-        </button>
-      </p>
-      <p className={timerState === TimerState.RUNNING ? "active" : undefined}>
-        {/* "Timer inactive" */}
-        {(() => {
-          switch (timerState) {
-            case TimerState.RUNNING:
-              return "Timer is running...";
-            case TimerState.EXPIRED:
-              return "Timer is expired!";
-            case TimerState.STOPPED:
-              return "Timer inactive";
-          }
-        })()}
-      </p>
-    </section>
+          })()}
+        </p>
+      </section>
+    </>
   );
 };
 
