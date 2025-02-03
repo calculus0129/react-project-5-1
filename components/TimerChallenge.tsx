@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import ResultModal from "./ResultModal";
+import ResultModal, { ResultModalHandle } from "./ResultModal";
 
 export type TimerChallengeProps = {
   title?: string;
@@ -20,7 +20,7 @@ const TimerChallenge: React.FC<TimerChallengeProps> = ({
   targetTime,
 }) => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const dialogRef = useRef<HTMLDialogElement | null>(null);
+  const dialogRef = useRef<ResultModalHandle | null>(null);
 
   const [timerState, setTimerState] = useState(TimerState.RESETTED);
   const handleClick = () => {
@@ -29,7 +29,7 @@ const TimerChallenge: React.FC<TimerChallengeProps> = ({
         setTimerState(TimerState.RUNNING);
         timerRef.current = setTimeout(() => {
           setTimerState(TimerState.EXPIRED);
-          dialogRef.current?.showModal();
+          dialogRef.current?.show();
         }, targetTime * 1000);
         break;
       case TimerState.RUNNING:
