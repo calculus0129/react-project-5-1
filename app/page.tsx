@@ -1,5 +1,6 @@
 import Player from "@/components/Player";
 import TimerChallenge from "@/components/TimerChallenge";
+import { TICKTIME } from "@/constants";
 
 export default function Home() {
   return (
@@ -14,6 +15,11 @@ export default function Home() {
         </header>
         <div>
           <Player />
+          <p>
+            1 tick={TICKTIME} ms{" "}
+            {/* A comment for the prettier to not put the tps part in the same line*/}
+            ({1000 / TICKTIME} tps)
+          </p>
           <div id="challenges">
             <TimerChallenge targetTime={3} />
             <TimerChallenge title="Easy" targetTime={1} />

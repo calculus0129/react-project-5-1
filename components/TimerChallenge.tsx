@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import ResultModal, { ResultModalHandle } from "./ResultModal";
+import { TICKTIME } from "@/constants";
 
 export type TimerChallengeProps = {
   title?: string;
@@ -19,35 +20,50 @@ const TimerChallenge: React.FC<TimerChallengeProps> = ({
   title,
   targetTime,
 }) => {
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const dialogRef = useRef<ResultModalHandle | null>(null);
+  const remainingTimeRef = useRef(targetTime * 1000);
+  const resultRef = useRef<string | null>(null);
 
   const [timerState, setTimerState] = useState(TimerState.RESETTED);
   const handleClick = () => {
     switch (timerState) {
       case TimerState.RESETTED:
         setTimerState(TimerState.RUNNING);
-        timerRef.current = setTimeout(() => {
-          setTimerState(TimerState.EXPIRED);
-          dialogRef.current?.show();
-        }, targetTime * 1000);
+        intervalRef.current = setInterval(() => {
+          remainingTimeRef.current -= TICKTIME;
+          if (remainingTimeRef.current <= 0) {
+            setTimerState(TimerState.EXPIRED);
+            clearInterval(intervalRef.current!);
+            resultRef.current = "You Lost!";
+            dialogRef.current?.show();
+          }
+        }, TICKTIME);
         break;
       case TimerState.RUNNING:
-        clearTimeout(timerRef.current!);
         setTimerState(TimerState.STOPPED);
-        break;
-      case TimerState.EXPIRED:
-        setTimerState(TimerState.RESETTED);
+        clearInterval(intervalRef.current!);
+        resultRef.current = "You Win!";
+        dialogRef.current?.show();
         break;
       case TimerState.STOPPED:
+      case TimerState.EXPIRED:
         setTimerState(TimerState.RESETTED);
+        remainingTimeRef.current = targetTime * 1000;
         break;
     }
   };
 
   return (
     <>
-      <ResultModal ref={dialogRef} result="You Lost!" targetTime={targetTime} />
+      <ResultModal
+        ref={dialogRef}
+        result={resultRef.current}
+        targetTime={targetTime}
+        remainingTime={
+          (remainingTimeRef.current ?? 0) < 0 ? 0 : remainingTimeRef.current
+        }
+      />
       <section className="challenge">
         <h2>{title ?? "untitled"}</h2>
         <p className="challenge-time">

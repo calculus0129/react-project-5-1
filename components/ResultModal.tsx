@@ -6,10 +6,11 @@ export interface ResultModalHandle {
 }
 
 interface ResultModalProps {
-  result: string;
+  result: string | null;
   ref: React.Ref<ResultModalHandle>;
   //   onClose: () => void;
   targetTime: number;
+  remainingTime?: number;
 }
 
 const ResultModal: React.FC<ResultModalProps> = ({
@@ -17,8 +18,10 @@ const ResultModal: React.FC<ResultModalProps> = ({
   ref,
   //   onClose,
   targetTime,
+  remainingTime,
 }) => {
   const dialogRef = useRef<HTMLDialogElement | null>(null);
+  remainingTime = Math.max(0, remainingTime ?? 0);
 
   useImperativeHandle(ref, () => {
     return {
@@ -40,7 +43,8 @@ const ResultModal: React.FC<ResultModalProps> = ({
         Target Time: <strong>{targetTime}</strong> seconds.
       </p>
       <p>
-        You stopped the timer with <strong>X</strong> seconds left.
+        You stopped the timer with{" "}
+        <strong>{(remainingTime / 1000).toFixed(3)}</strong> seconds left.
       </p>
       <form method="dialog">
         <button>Close</button>
